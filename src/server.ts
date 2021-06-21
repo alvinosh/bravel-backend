@@ -1,26 +1,26 @@
 import { Logger } from "./lib";
 import { __port__ } from "./config";
+import { db } from "./providers";
 
 class Server {
 	port: string;
 
-	constructor(port?: string) {
-		this.port = __port__ || port || "8080";
+	constructor() {
+		this.port = __port__ || "8080";
 	}
 
-	public init() {
-		this.loadDatabase();
-
-		this.loadServer(this.port);
+	public async init() {
+		await Promise.all([this.loadDatabase(), this.loadServer(this.port)]);
 	}
 
-	public loadServer(port: string) {
+	public async loadServer(port: string) {
 		Logger.info(`Server :: Loading Express Server on port ${port}`);
 	}
 
-	public loadDatabase() {
+	public async loadDatabase() {
 		Logger.info("Server :: Loading Database");
+		await db.init();
 	}
 }
 
-export { Server };
+export default new Server();

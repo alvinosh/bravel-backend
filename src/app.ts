@@ -1,5 +1,8 @@
-import { Server } from "./server";
+import { Logger } from "./lib";
+import Server from "./server";
 
-let server = new Server();
-
-server.init();
+(async () => {
+	await Server.init();
+})().catch((e) => {
+	Logger.error(e);
+});
