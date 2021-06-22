@@ -1,10 +1,10 @@
 import * as dotenv from "dotenv";
 import { DatabaseConfig } from "src/types";
 
-dotenv.config({ path: "./.env" });
+dotenv.config();
 
 export const __prod__ = process.env.NODE_ENV === "production";
-export const __port__ = process.env.PORT;
+export const __port__ = process.env.PORT || "8080";
 
 export const db_config: DatabaseConfig = {
 	host: process.env.DB_HOST!,
@@ -13,3 +13,5 @@ export const db_config: DatabaseConfig = {
 	password: process.env.DB_PASSWORD!,
 	name: process.env.DB_NAME!,
 };
+
+export const __domain__ = process.env.DOMAIN;

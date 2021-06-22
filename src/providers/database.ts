@@ -10,6 +10,4 @@ class Database {
 	}
 }
 
-const db = new Database();
-
-export { db };
+export const db = new Database();
