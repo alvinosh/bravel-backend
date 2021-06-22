@@ -14,4 +14,4 @@ export const db_config: DatabaseConfig = {
 	name: process.env.DB_NAME!,
 };
 
-export const __domain__ = process.env.DOMAIN;
+export const __domain__ = process.env.DOMAIN || "127.0.0.1";

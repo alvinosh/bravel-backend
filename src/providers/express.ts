@@ -25,7 +25,7 @@ class ExpressServer {
 	private async initMiddleware() {
 		if (__prod__) {
 			this.app.use(morganMiddleware);
-			this.app.use(cors({ origin: __domain__ || "127.0.0.1", credentials: true }));
+			this.app.use(cors({ origin: __domain__, credentials: true }));
 		} else {
 			this.app.use(morganMiddleware);
 			this.app.use(cors({ origin: true, credentials: true }));

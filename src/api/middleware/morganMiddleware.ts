@@ -1,5 +1,5 @@
 import morgan, { StreamOptions } from "morgan";
-import { __prod__ } from "src/config";
+import { __prod__ } from "../../config";
 
 import { Logger } from "../../lib";
 
