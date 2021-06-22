@@ -5,18 +5,19 @@
 	"main": "app.js",
 	"scripts": {
 		"watch": "tsc -w",
-		"dev": "nodemon -x 'clear;node' dist/app.js"
+		"dev": "nodemon -x 'clear;node' dist/app.js",
+		"migrate" : "npx prisma migrate dev"
 	},
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@prisma/client": "^2.25.0",
 		"body-parser": "^1.19.0",
 		"cors": "^2.8.5",
 		"dotenv": "^10.0.0",
 		"express": "^4.17.1",
 		"morgan": "^1.10.0",
 		"pg": "^8.6.0",
-		"typeorm": "^0.2.34",
 		"winston": "^3.3.3"
 	},
 	"devDependencies": {
@@ -25,6 +26,7 @@
 		"@types/express": "^4.17.12",
 		"@types/morgan": "^1.9.2",
 		"@types/node": "^15.12.4",
-		"@types/winston": "^2.4.4"
+		"@types/winston": "^2.4.4",
+		"prisma": "^2.25.0"
 	}
 }

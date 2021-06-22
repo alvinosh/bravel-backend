@@ -19,7 +19,7 @@ class Server {
 
 	public async loadDatabase() {
 		Logger.info("Server :: Loading Database");
-		await db.init();
+		db.init();
 	}
 }
 

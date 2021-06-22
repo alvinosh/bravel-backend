@@ -1,17 +1,12 @@
-import { createConnection, Connection } from "typeorm";
-import { db_config } from "../config";
-class Database {
-	public async init(): Promise<Connection> {
-		const connection: Connection = await createConnection({
-			type: "postgres",
-			host: db_config.host,
-			port: db_config.port,
-			username: db_config.username,
-			password: db_config.password,
-			database: db_config.name,
-		});
+import { PrismaClient } from "@prisma/client";
+import { Logger } from "../lib";
 
-		return connection;
+class Database {
+	prisma: any;
+
+	public async init() {
+		this.prisma = new PrismaClient();
+		Logger.info("Prisma Connection Made");
 	}
 }
 
