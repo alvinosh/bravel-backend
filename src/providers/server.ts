@@ -3,22 +3,41 @@ import cors from "cors";
 import hpp from "hpp";
 import helmet from "helmet";
 import compression from "compression";
+import http from "http";
+import socketio from "socket.io";
 
 import { Logger } from "../lib";
 import { __domain__, __port__, __prod__ } from "../config";
 import { morganMiddleware } from "../api/middleware";
 
-class ExpressServer {
-	app: express.Application;
-	port: number;
+class Server {
+	private app: express.Application;
+	private server: http.Server;
+	private io: socketio.Server;
+	private port: number;
 
 	public async init() {
 		this.app = express();
 
-		this.initMiddleware();
+		this.server = http.createServer(this.app);
 
-		this.app.listen(__port__, () => {
-			Logger.info(`App listening on port ${__port__}`);
+		this.initMiddleware();
+		this.initSocket();
+
+		this.listen();
+	}
+
+	private async listen() {
+		this.server.listen(__port__, () => {
+			Logger.info(`Server listening on port ${__port__}`);
+		});
+
+		this.io.on("connect", (socket: any) => {
+			Logger.info("Connected client on port %s.", this.port);
+
+			socket.on("disconnect", () => {
+				Logger.info("Client disconnected");
+			});
 		});
 	}
 
@@ -37,6 +56,11 @@ class ExpressServer {
 		this.app.use(express.json());
 		this.app.use(express.urlencoded({ extended: true }));
 	}
+
+	private async initSocket() {
+		this.io = require("socket.io")(this.server).listen(this.server, { origins: "*:*" });
+		Logger.info("IO Socket listening");
+	}
 }
 
-export const express_server = new ExpressServer();
+export const server = new Server();
