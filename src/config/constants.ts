@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import { DatabaseConfig } from "src/types";
+import { DatabaseConfig } from "../types";
 
 dotenv.config();
 
