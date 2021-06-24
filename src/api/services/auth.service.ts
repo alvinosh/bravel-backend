@@ -4,8 +4,7 @@ import { PrismaClient } from "@prisma/client";
 
 import { HttpException } from "../../exceptions";
 import { LoginUserDto, SignupUserDto } from "../DTOs";
-import { PSW_HASH, JWT_TOKEN } from "../../config";
-import { Logger } from "../../lib";
+import { PSW_HASH, JWT_TOKEN, TOKEN_EXPIRE } from "../../config";
 
 class AuthService {
 	private prisma: any;
@@ -35,7 +34,7 @@ class AuthService {
 			lastname: user.last_name,
 		};
 
-		return jwt.sign(payload, JWT_TOKEN, { expiresIn: "1d" });
+		return jwt.sign(payload, JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
 	}
 
 	public async signup(userData: SignupUserDto): Promise<any> {

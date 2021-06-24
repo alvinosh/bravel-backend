@@ -1,6 +1,14 @@
 import { Length, IsString, Matches, IsEmail, IsNotEmpty } from "class-validator";
 import { Match } from "../validators";
 export class LoginUserDto {
+	@IsNotEmpty({ message: "Please enter username" })
+	public username: string;
+
+	@IsNotEmpty({ message: "Please enter password" })
+	public password: string;
+}
+
+export class SignupUserDto {
 	@IsString({ message: "Username must contain characters" })
 	@Length(3, 20, { message: "Username must be between 3 and 20 characters long" })
 	@IsNotEmpty({ message: "Please enter username" })
@@ -11,9 +19,7 @@ export class LoginUserDto {
 	}) // Minimum eight characters, at least one letter and one number:
 	@IsNotEmpty({ message: "Please enter password" })
 	public password: string;
-}
 
-export class SignupUserDto extends LoginUserDto {
 	@IsString({ message: "First Name must contain characters" })
 	@Length(2, 20, { message: "First Name must be between 2 and 20 characters long" })
 	@IsNotEmpty({ message: "Please enter first name" })
