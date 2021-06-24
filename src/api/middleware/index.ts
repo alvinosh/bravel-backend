@@ -1,1 +1,2 @@
-export * from "./morganMiddleware";
+export * from "./morgan.middleware";
+export * from "./validation.middleware";
