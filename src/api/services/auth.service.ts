@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt";
-
-import { User } from "../../types/user";
-import { Logger } from "../../lib";
-import { HttpException } from "../../exceptions";
-
+import * as jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
-import { SignupUserDto } from "../DTOs";
+
+import { HttpException } from "../../exceptions";
+import { LoginUserDto, SignupUserDto } from "../DTOs";
+import { PSW_HASH, JWT_TOKEN } from "../../config";
+import { Logger } from "../../lib";
 
 class AuthService {
 	private prisma: any;
@@ -14,8 +14,32 @@ class AuthService {
 		this.prisma = new PrismaClient();
 	}
 
+	public async login(userData: LoginUserDto): Promise<any> {
+		let user: any = await this.prisma.user.findUnique({
+			where: {
+				username: userData.username,
+			},
+		});
+
+		if (!user) throw new HttpException(401, "Username does not exist");
+
+		const verified: boolean = await bcrypt.compare(userData.password, user.password);
+
+		if (!verified) throw new HttpException(401, "Wrong Password");
+
+		const payload = {
+			userId: user.id,
+			email: user.email,
+			username: user.username,
+			firstname: user.first_name,
+			lastname: user.last_name,
+		};
+
+		return jwt.sign(payload, JWT_TOKEN, { expiresIn: "1d" });
+	}
+
 	public async signup(userData: SignupUserDto): Promise<any> {
-		let findUsers: any = await this.prisma.user.findMany({
+		const findUsers: any = await this.prisma.user.findMany({
 			where: {
 				OR: [{ email: userData.email }, { username: userData.username }],
 			},
@@ -25,9 +49,9 @@ class AuthService {
 			if (findUsers[i].username == userData.username) throw new HttpException(409, "This username already exists");
 		}
 
-		const hashedPassword = await bcrypt.hash(userData.password, 10);
+		const hashedPassword = await bcrypt.hash(userData.password, PSW_HASH);
 
-		const user: User = await this.prisma.user.create({
+		const user = await this.prisma.user.create({
 			data: {
 				email: userData.email,
 				first_name: userData.firstname,
@@ -39,9 +63,6 @@ class AuthService {
 		});
 
 		return user;
-	}
-	public async login() {
-		Logger.info("Log In Service");
 	}
 }
 

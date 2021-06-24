@@ -18,3 +18,6 @@ export const db_config: DatabaseConfig = {
 export const __domain__ = process.env.DOMAIN || "127.0.0.1";
 
 export const routes = [new AuthRoute()];
+
+export const PSW_HASH: number = +process.env.PASSWORD_HASH!;
+export const JWT_TOKEN = process.env.JWT_TOKEN!;
