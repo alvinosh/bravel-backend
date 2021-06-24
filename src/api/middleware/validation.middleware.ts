@@ -7,9 +7,9 @@ type Value = "body" | "query" | "params";
 
 export const validationMiddleware = (type: any, value: Value = "body"): RequestHandler => {
 	return (req, _res, next) => {
-		validate(plainToClass(type, req[value])).then((errors: ValidationError[]) => {
+		validate(plainToClass(type, req[value]), { forbidUnknownValues: true, stopAtFirstError: true }).then((errors: ValidationError[]) => {
 			if (errors.length > 0) {
-				const message = errors.map((error: ValidationError) => Object.values(error.constraints!)).join(", ");
+				const message = errors.map((error: ValidationError) => Object.values(error.constraints!)).join("\n");
 				next(new HttpException(400, message));
 			} else {
 				next();

@@ -5,7 +5,16 @@ import { AuthService } from "../services";
 class AuthController {
 	public authService = new AuthService();
 
-	public logIn = async (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
+	public signup = async (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
+		try {
+			Logger.info("Log In Controller");
+			this.authService.signup();
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	public login = async (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
 		try {
 			Logger.info("Log In Controller");
 			this.authService.login();
