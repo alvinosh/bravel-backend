@@ -15,17 +15,19 @@ class AuthService {
 	}
 
 	public async signup(userData: SignupUserDto): Promise<any> {
-		const findUser: User = await this.prisma.user.findUnique({
+		let findUsers: any = await this.prisma.user.findMany({
 			where: {
-				email: userData.email,
+				OR: [{ email: userData.email }, { username: userData.username }],
 			},
 		});
-
-		if (findUser) throw new HttpException(409, `You're email ${userData.email} already exists`);
+		for (let i = 0; i < findUsers.length; i++) {
+			if (findUsers[i].email == userData.email) throw new HttpException(409, "This email address already exists");
+			if (findUsers[i].username == userData.username) throw new HttpException(409, "This username already exists");
+		}
 
 		const hashedPassword = await bcrypt.hash(userData.password, 10);
 
-		const user = await this.prisma.user.create({
+		const user: User = await this.prisma.user.create({
 			data: {
 				email: userData.email,
 				first_name: userData.firstname,
@@ -38,7 +40,6 @@ class AuthService {
 
 		return user;
 	}
-
 	public async login() {
 		Logger.info("Log In Service");
 	}
