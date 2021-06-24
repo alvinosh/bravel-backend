@@ -1,4 +1,5 @@
 import * as dotenv from "dotenv";
+import { AuthRoute } from "../api/routes";
 import { DatabaseConfig } from "../types";
 
 dotenv.config();
@@ -15,3 +16,5 @@ export const db_config: DatabaseConfig = {
 };
 
 export const __domain__ = process.env.DOMAIN || "127.0.0.1";
+
+export const routes = [new AuthRoute()];

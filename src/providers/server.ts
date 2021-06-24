@@ -9,6 +9,8 @@ import socketio from "socket.io";
 import { Logger } from "../lib";
 import { __domain__, __port__, __prod__ } from "../config";
 import { morganMiddleware } from "../api/middleware";
+import { Route } from "../types";
+import { routes } from "../config";
 
 class Server {
 	private app: express.Application;
@@ -23,6 +25,7 @@ class Server {
 
 		this.initMiddleware();
 		this.initSocket();
+		this.initializeRoutes(routes);
 
 		this.listen();
 	}
@@ -38,6 +41,12 @@ class Server {
 			socket.on("disconnect", () => {
 				Logger.info("Client disconnected");
 			});
+		});
+	}
+
+	private initializeRoutes(routes: Route[]) {
+		routes.forEach((route) => {
+			this.app.use("/", route.router);
 		});
 	}
 

@@ -5,7 +5,7 @@ import { validationMiddleware } from "../middleware";
 import { LoginUserDto } from "../DTOs";
 
 class AuthRoute implements Route {
-	public path = "/auth";
+	public path = "/";
 	public router = Router();
 	public authController = new AuthController();
 
