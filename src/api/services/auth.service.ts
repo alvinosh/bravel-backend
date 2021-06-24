@@ -61,7 +61,15 @@ class AuthService {
 			},
 		});
 
-		return user;
+		const payload = {
+			userId: user.id,
+			email: user.email,
+			username: user.username,
+			firstname: user.first_name,
+			lastname: user.last_name,
+		};
+
+		return jwt.sign(payload, JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
 	}
 }
 
