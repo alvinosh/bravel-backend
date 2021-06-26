@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { Logger } from "../../lib";
 import { LoginUserDto, SignupUserDto } from "../DTOs";
 import { AuthService } from "../services";
 
@@ -10,8 +9,6 @@ class AuthController {
 		try {
 			const userData: LoginUserDto = req.body;
 			const loginToken = await this.authService.login(userData);
-
-			Logger.info(loginToken);
 
 			res.status(201).json({ token: loginToken, message: "login" });
 		} catch (error) {
