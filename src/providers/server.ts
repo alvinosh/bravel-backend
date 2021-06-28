@@ -5,10 +5,11 @@ import helmet from "helmet";
 import compression from "compression";
 import http from "http";
 import socketio from "socket.io";
+import morgan from "morgan";
 
-import { Logger } from "../lib";
+import { Logger, stream } from "../lib";
 import { __domain__, __port__, __prod__ } from "../config";
-import { morganMiddleware } from "../api/middleware";
+import { errorMiddleware } from "../api/middleware";
 import { Route } from "../types";
 import { routes } from "../config";
 
@@ -26,6 +27,7 @@ class Server {
 		this.initMiddleware();
 		this.initSocket();
 		this.initializeRoutes(routes);
+		this.initErrorHandling();
 
 		this.listen();
 	}
@@ -52,18 +54,24 @@ class Server {
 
 	private async initMiddleware() {
 		if (__prod__) {
-			this.app.use(morganMiddleware);
+			this.app.use(morgan("combined", { stream }));
 			this.app.use(cors({ origin: __domain__, credentials: true }));
 		} else {
-			this.app.use(morganMiddleware);
+			this.app.use(morgan("dev", { stream }));
 			this.app.use(cors({ origin: true, credentials: true }));
 		}
+
+		this.app.use(errorMiddleware);
 
 		this.app.use(hpp());
 		this.app.use(helmet());
 		this.app.use(compression());
 		this.app.use(express.json());
 		this.app.use(express.urlencoded({ extended: true }));
+	}
+
+	private async initErrorHandling() {
+		this.app.use(errorMiddleware);
 	}
 
 	private async initSocket() {

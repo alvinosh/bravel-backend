@@ -21,7 +21,7 @@ class AuthController {
 			const userData: SignupUserDto = req.body;
 			const signUpUserData = await this.authService.signup(userData);
 
-			res.status(201).json({ data: signUpUserData, message: "signup" });
+			res.status(201).json({ token: signUpUserData, message: "signup" });
 		} catch (error) {
 			next(error);
 		}
