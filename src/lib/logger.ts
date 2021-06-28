@@ -1,3 +1,4 @@
+import { __prod__ } from "../config";
 import winston from "winston";
 
 const colors = {
@@ -19,9 +20,7 @@ const levels = {
 };
 
 const level = () => {
-	const env = process.env.NODE_ENV || "development";
-	const isDevelopment = env === "development";
-	return isDevelopment ? "debug" : "warn";
+	return __prod__ ? "warn" : "debug";
 };
 
 const format = winston.format.combine(
@@ -48,7 +47,7 @@ const Logger = winston.createLogger({
 
 const stream = {
 	write: (message: string) => {
-		Logger.info(message.substring(0, message.lastIndexOf("\n")));
+		Logger.http(message);
 	},
 };
 
