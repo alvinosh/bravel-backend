@@ -18,9 +18,22 @@ model User {
 	last_name		String
 	password		String
 	username		String	 @unique
-	online 			Boolean
+	online 			Boolean  @default(true)
+	location 		Location?
+
 	role      	Role     @default(USER)
 
+}
+
+model Location {
+  id        	Int      @id @default(autoincrement())
+  createdAt 	DateTime @default(now())
+
+	user 				User     @relation(fields: [userId], references: [id])
+	userId 			Int
+
+	lat					Int
+	lon					Int
 }
 
 enum Role {

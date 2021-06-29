@@ -20,11 +20,11 @@ class AuthService {
 			},
 		});
 
-		if (!user) throw new HttpException(401, "Username does not exist");
+		if (!user) throw new HttpException(401, "Unauthorized", ["Username does not exist"]);
 
 		const verified: boolean = await bcrypt.compare(userData.password, user.password);
 
-		if (!verified) throw new HttpException(401, "Wrong Password");
+		if (!verified) throw new HttpException(401, "Unauthorized", ["Password is incorrect"]);
 
 		const payload = {
 			userId: user.id,
@@ -44,8 +44,8 @@ class AuthService {
 			},
 		});
 		for (let i = 0; i < findUsers.length; i++) {
-			if (findUsers[i].email == userData.email) throw new HttpException(409, "This email address already exists");
-			if (findUsers[i].username == userData.username) throw new HttpException(409, "This username already exists");
+			if (findUsers[i].email == userData.email) throw new HttpException(409, "Email In use", ["This email address already exists"]);
+			if (findUsers[i].username == userData.username) throw new HttpException(409, "Username in Use", ["This username already exists"]);
 		}
 
 		const hashedPassword = await bcrypt.hash(userData.password, PSW_HASH);

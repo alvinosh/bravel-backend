@@ -1,5 +1,9 @@
-import { Length, IsString, Matches, IsEmail, IsNotEmpty } from "class-validator";
+import { Type } from "class-transformer";
+
+import { Length, IsString, Matches, IsEmail, IsNotEmpty, IsBoolean, ValidateNested, IsOptional } from "class-validator";
 import { Match } from "../validators";
+import { LocationDto } from "../DTOs";
+
 export class LoginUserDto {
 	@IsNotEmpty({ message: "Please enter username" })
 	public username: string;
@@ -39,4 +43,14 @@ export class SignupUserDto {
 	})
 	@IsNotEmpty({ message: "Please confirm password" })
 	public confirmpassword: string;
+
+	@IsOptional()
+	@IsBoolean({ message: "Online value must be true or false" })
+	@IsNotEmpty({ message: "Bad request no online field" })
+	public online: boolean;
+
+	@IsNotEmpty({ message: "Bad request no loc field" })
+	@ValidateNested()
+	@Type(() => LocationDto)
+	public location: LocationDto;
 }
