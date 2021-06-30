@@ -1,7 +1,6 @@
 import { plainToClass } from "class-transformer";
 import { validate, ValidationError } from "class-validator";
 import { RequestHandler } from "express";
-import { Logger } from "../../lib";
 import { HttpException } from "../../exceptions";
 
 type Value = "body" | "query" | "params";

@@ -4,7 +4,12 @@ import { db, server } from "./providers";
 
 export class App {
 	public async init() {
+		this.clearConsole();
 		await Promise.all([this.loadDatabase(), this.loadServer()]);
+	}
+
+	public clearConsole(): void {
+		Logger.info("\x1B[2J\x1B[0f");
 	}
 
 	public async loadServer() {

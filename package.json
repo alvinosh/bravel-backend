@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"watch": "tsc -w",
-		"dev": "nodemon -x 'clear;node' dist/index.js",
+		"dev": "nodemon dist/index.js",
 		"migrate": "npx prisma migrate dev",
 		"studio": "npx prisma studio"
 	},
@@ -44,6 +44,7 @@
 		"@types/node": "^15.12.4",
 		"@types/socket.io": "^3.0.2",
 		"@types/winston": "^2.4.4",
-		"prisma": "^2.25.0"
+		"prisma": "^2.25.0",
+		"tsconfig-paths": "^3.9.0"
 	}
 }
