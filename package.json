@@ -44,7 +44,6 @@
 		"@types/node": "^15.12.4",
 		"@types/socket.io": "^3.0.2",
 		"@types/winston": "^2.4.4",
-		"prisma": "^2.25.0",
-		"tsconfig-paths": "^3.9.0"
+		"prisma": "^2.25.0"
 	}
 }
