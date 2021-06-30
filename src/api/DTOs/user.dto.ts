@@ -54,3 +54,17 @@ export class SignupUserDto {
 	@Type(() => LocationDto)
 	public location: LocationDto;
 }
+
+export class UserDto {
+	public username: string;
+
+	public firstname: string;
+
+	public lastname: string;
+
+	public email: string;
+
+	public online: boolean;
+
+	public location: LocationDto;
+}

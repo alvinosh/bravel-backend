@@ -48,7 +48,7 @@ class Server {
 
 	private initializeRoutes(routes: Route[]) {
 		routes.forEach((route) => {
-			this.app.use("/", route.router);
+			this.app.use(route.path!, route.router);
 		});
 	}
 

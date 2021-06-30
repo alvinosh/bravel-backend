@@ -3,9 +3,8 @@ import * as jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 
 import { HttpException } from "../../exceptions";
-import { LoginUserDto, SignupUserDto } from "../DTOs";
+import { LoginUserDto, SignupUserDto, UserDto } from "../DTOs";
 import { PSW_HASH, JWT_TOKEN, TOKEN_EXPIRE } from "../../config";
-
 class AuthService {
 	private prisma: any;
 
@@ -18,6 +17,9 @@ class AuthService {
 			where: {
 				username: userData.username,
 			},
+			include: {
+				location: true,
+			},
 		});
 
 		if (!user) throw new HttpException(401, "Unauthorized", ["Username does not exist"]);
@@ -26,15 +28,7 @@ class AuthService {
 
 		if (!verified) throw new HttpException(401, "Unauthorized", ["Password is incorrect"]);
 
-		const payload = {
-			userId: user.id,
-			email: user.email,
-			username: user.username,
-			firstname: user.first_name,
-			lastname: user.last_name,
-		};
-
-		return jwt.sign(payload, JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
+		return jwt.sign(this.getPayload(user), JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
 	}
 
 	public async signup(userData: SignupUserDto): Promise<any> {
@@ -57,19 +51,28 @@ class AuthService {
 				last_name: userData.lastname,
 				password: hashedPassword,
 				username: userData.username,
+				location: {
+					create: {
+						lat: userData.location.lat,
+						lon: userData.location.lon,
+					},
+				},
 				online: true,
 			},
 		});
 
-		const payload = {
-			userId: user.id,
+		return jwt.sign(this.getPayload(user), JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
+	}
+
+	private getPayload(user: any): UserDto {
+		return {
 			email: user.email,
 			username: user.username,
 			firstname: user.first_name,
 			lastname: user.last_name,
+			location: user.location,
+			online: user.online,
 		};
-
-		return jwt.sign(payload, JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
 	}
 }
 
