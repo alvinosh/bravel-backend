@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { Logger } from "../../lib";
+import { UserDto } from "../DTOs";
 
 class UsersService {
 	private prisma: any;
@@ -8,8 +8,16 @@ class UsersService {
 		this.prisma = new PrismaClient();
 	}
 
-	public async getAll() {
-		Logger.info("yay");
+	public async getOnline(): Promise<UserDto[]> {
+		return this.prisma.user.findMany({
+			where: {
+				online: true,
+			},
+
+			include: {
+				location: true,
+			},
+		});
 	}
 }
 

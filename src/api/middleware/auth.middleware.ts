@@ -1,12 +1,13 @@
-import { Request, NextFunction, Response } from "express";
+import { NextFunction, Response } from "express";
+import { UserRequest } from "../../types/auth";
+
 import jwt from "jsonwebtoken";
 
-import { Logger } from "../../lib";
 import { JWT_TOKEN } from "../../config";
 import { HttpException } from "../../exceptions";
 import { UserDto } from "../DTOs";
 
-const authMiddleware = async (req: Request, _res: Response, next: NextFunction) => {
+const authMiddleware = async (req: UserRequest, _res: Response, next: NextFunction) => {
 	try {
 		const Authorization = req.header("Authorization");
 
@@ -15,7 +16,7 @@ const authMiddleware = async (req: Request, _res: Response, next: NextFunction) 
 
 			const verificationResponse = (await jwt.verify(AuthKey, JWT_TOKEN)) as UserDto;
 
-			Logger.info(verificationResponse);
+			req.user = verificationResponse;
 
 			next();
 		} else {

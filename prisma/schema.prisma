@@ -32,8 +32,8 @@ model Location {
 	user 				User     @relation(fields: [userId], references: [id])
 	userId 			Int
 
-	lat					Int
-	lon					Int
+	lat					Float
+	lon					Float
 }
 
 enum Role {

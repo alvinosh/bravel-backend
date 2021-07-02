@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"watch": "tsc -w",
+		"watch": "tsc --strictNullChecks -w",
 		"dev": "nodemon dist/index.js",
 		"migrate": "npx prisma migrate dev",
 		"studio": "npx prisma studio"
