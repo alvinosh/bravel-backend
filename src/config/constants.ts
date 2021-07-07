@@ -15,7 +15,7 @@ export const db_config: DatabaseConfig = {
 	name: process.env.DB_NAME!,
 };
 
-export const __domain__ = process.env.DOMAIN || "127.0.0.1";
+export const __domain__ = process.env.DOMAIN || "http://127.0.0.1:8080";
 
 export const routes = [new UsersRoute(), new AuthRoute()];
 

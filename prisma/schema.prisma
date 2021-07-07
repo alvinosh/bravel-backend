@@ -20,8 +20,13 @@ model User {
 	username		String	 @unique
 	online 			Boolean  @default(true)
 	location 		Location?
-
 	role      	Role     @default(USER)
+
+	group_user 	Group[]	@relation("user")
+	group_admin	Group[]	@relation("admin")
+
+	messages 		Messages[]
+
 
 }
 
@@ -39,4 +44,24 @@ model Location {
 enum Role {
   USER
   ADMIN
+}
+
+model Group {
+  id        Int        @id @default(autoincrement())
+	name 			String
+
+  users     User[]		@relation("user")
+	admins 		User[]		@relation("admin")
+	messages  Messages[]
+
+}
+
+model Messages {
+  id          Int     @id @default(autoincrement())
+  text        String 
+  group       Group   @relation(fields: [groupId], references: [id])
+  groupId     Int
+
+  sender    User  @relation(fields: [senderId], references: [id])
+  senderId  Int
 }

@@ -4,7 +4,7 @@ import { UsersController } from "../controllers";
 import { authMiddleware } from "../middleware";
 
 class UsersRoute implements Route {
-	public path = "/users";
+	public path = "";
 	public router = Router();
 	public usersController = new UsersController();
 
@@ -13,7 +13,11 @@ class UsersRoute implements Route {
 	}
 
 	private initializeRoutes() {
-		this.router.get(``, authMiddleware, this.usersController.getAll);
+		this.router.get(`/users`, authMiddleware, this.usersController.getAll);
+		this.router.get("/user/:username", this.usersController.getOne);
+
+		this.router.post("/user/online", authMiddleware, this.usersController.online);
+		this.router.post("/user/offline", authMiddleware, this.usersController.offline);
 	}
 }
 

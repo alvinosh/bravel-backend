@@ -1,10 +1,9 @@
 import bcrypt from "bcrypt";
-import * as jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 
 import { HttpException } from "../../exceptions";
 import { LoginUserDto, SignupUserDto, UserDto } from "../DTOs";
-import { PSW_HASH, JWT_TOKEN, TOKEN_EXPIRE } from "../../config";
+import { PSW_HASH } from "../../config";
 class AuthService {
 	private prisma: any;
 
@@ -12,7 +11,7 @@ class AuthService {
 		this.prisma = new PrismaClient();
 	}
 
-	public async login(userData: LoginUserDto): Promise<any> {
+	public async login(userData: LoginUserDto): Promise<UserDto> {
 		let user: any = await this.prisma.user.findUnique({
 			where: {
 				username: userData.username,
@@ -28,10 +27,10 @@ class AuthService {
 
 		if (!verified) throw new HttpException(401, "Unauthorized", ["Password is incorrect"]);
 
-		return jwt.sign(this.getPayload(user), JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
+		return this.getPayload(user);
 	}
 
-	public async signup(userData: SignupUserDto): Promise<any> {
+	public async signup(userData: SignupUserDto): Promise<UserDto> {
 		const findUsers: any = await this.prisma.user.findMany({
 			where: {
 				OR: [{ email: userData.email }, { username: userData.username }],
@@ -61,7 +60,7 @@ class AuthService {
 			},
 		});
 
-		return jwt.sign(this.getPayload(user), JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
+		return this.getPayload(user);
 	}
 
 	private getPayload(user: any): UserDto {

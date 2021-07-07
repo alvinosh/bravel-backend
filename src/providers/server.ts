@@ -4,7 +4,7 @@ import hpp from "hpp";
 import helmet from "helmet";
 import compression from "compression";
 import http from "http";
-import socketio from "socket.io";
+import { Server as IOServer } from "socket.io";
 import morgan from "morgan";
 
 import { Logger, stream } from "../lib";
@@ -12,38 +12,70 @@ import { __domain__, __port__, __prod__ } from "../config";
 import { errorMiddleware } from "../api/middleware";
 import { Route } from "../types";
 import { routes } from "../config";
+import { reqWithToken } from "../utils";
 
 class Server {
 	private app: express.Application;
 	private server: http.Server;
-	private io: socketio.Server;
-	private port: number;
+	private io: IOServer;
+
+	private users: { [key: string]: string };
 
 	public async init() {
 		this.app = express();
 
 		this.server = http.createServer(this.app);
 
+		this.users = {};
+
 		this.initMiddleware();
-		this.initSocket();
+
 		this.initializeRoutes(routes);
 		this.initErrorHandling();
 
 		this.listen();
+		this.initSocket();
 	}
 
 	private async listen() {
 		this.server.listen(__port__, () => {
 			Logger.info(`Server listening on port ${__port__}`);
 		});
+	}
 
-		this.io.on("connect", (socket: any) => {
-			Logger.info("Connected client on port %s.", this.port);
+	private initSocket() {
+		this.io = require("socket.io")(this.server, {
+			allowEIO3: true,
+			cors: {
+				origin: "*",
+			},
+		});
+
+		this.app.set("socketio", this.io);
+
+		this.io.on("connection", (socket) => {
+			socket.on("join", (token) => {
+				this.users[socket.id] = token;
+				reqWithToken(`${__domain__}/user/online`, token);
+			});
+
+			socket.on("logout", (token) => {
+				delete this.users[socket.id];
+				if (!Object.keys(this.users).find((key) => this.users[key] === token)) {
+					reqWithToken(`${__domain__}/user/offline`, token);
+				}
+			});
 
 			socket.on("disconnect", () => {
-				Logger.info("Client disconnected");
+				let token = this.users[socket.id];
+				delete this.users[socket.id];
+				if (!Object.keys(this.users).find((key) => this.users[key] === token)) {
+					reqWithToken(`${__domain__}/user/offline`, token);
+				}
 			});
 		});
+
+		Logger.info("IO Socket listening");
 	}
 
 	private initializeRoutes(routes: Route[]) {
@@ -72,11 +104,6 @@ class Server {
 
 	private async initErrorHandling() {
 		this.app.use(errorMiddleware);
-	}
-
-	private async initSocket() {
-		this.io = require("socket.io")(this.server).listen(this.server, { origins: "*:*" });
-		Logger.info("IO Socket listening");
 	}
 }
 

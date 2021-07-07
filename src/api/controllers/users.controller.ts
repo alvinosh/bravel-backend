@@ -15,6 +15,40 @@ class UsersController {
 			next(error);
 		}
 	};
+
+	public getOne = async (req: UserRequest, res: Response, next: NextFunction): Promise<void> => {
+		try {
+			let usr = req.params.username;
+			const user: UserDto = await this.usersService.getUser(usr);
+
+			res.status(201).json({ user: user, message: "User" });
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	public online = async (req: UserRequest, res: Response, next: NextFunction): Promise<void> => {
+		try {
+			const user: UserDto = await this.usersService.setStatus(req.user!, true);
+			req.app.get("socketio").emit("user-change", user);
+
+			res.status(201).json({ users: user, message: "Online" });
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	public offline = async (req: UserRequest, res: Response, next: NextFunction): Promise<void> => {
+		try {
+			const user: UserDto = await this.usersService.setStatus(req.user!, false);
+
+			req.app.get("socketio").emit("user-change", user);
+
+			res.status(201).json({ users: user, message: "Online" });
+		} catch (error) {
+			next(error);
+		}
+	};
 }
 
 export { UsersController };
