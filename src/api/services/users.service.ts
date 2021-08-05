@@ -6,7 +6,6 @@ class UsersService {
 
   basicUser: Prisma.UserSelect = {
     id: true,
-    createdAt: true,
     email: true,
     first_name: true,
     last_name: true,
