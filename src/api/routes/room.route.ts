@@ -13,7 +13,7 @@ class RoomRoute implements Route {
   }
 
   private initializeRoutes() {
-    this.router.post("/room", authMiddleware, this.roomController.print);
+    this.router.post("/room", authMiddleware, this.roomController.createRoom);
   }
 }
 

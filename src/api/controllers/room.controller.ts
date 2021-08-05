@@ -1,20 +1,23 @@
 import { NextFunction, Response } from "express";
-import { Logger } from "../../lib";
-import { UserRequest } from "src/types/auth";
+import { UserRequest } from "../../types/auth";
 import { RoomService } from "../services";
 import { RoomDto } from "../DTOs";
 
 class RoomController {
   public roomService = new RoomService();
 
-  public print = (req: UserRequest, res: Response, next: NextFunction): any => {
+  public createRoom = async (req: UserRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-      let user_ids: string[]; // get user ids
-      let admin_ids: string[]; // get admin ids
+      const users: string[] = req.body["users"];
+      const admins: string[] = req.body["admins"];
 
-      let owner_id: string[]; //get owener ids
+      const name: string = req.body["name"];
 
-      let room: RoomDto;
+      const owner: string = req.user!.username;
+
+      const room: RoomDto = await this.roomService.createRoom(name, users, admins, owner);
+
+      res.status(201).json({ room: room, message: `Room with owner ${owner} created` });
     } catch (error) {
       next(error);
     }
