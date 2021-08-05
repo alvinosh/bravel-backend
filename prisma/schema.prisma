@@ -25,6 +25,8 @@ model User {
 	group_user 	Group[]	@relation("user")
 	group_admin	Group[]	@relation("admin")
 
+	group_owner Group[] 
+
 	messages 		Messages[]
 
 
@@ -52,6 +54,10 @@ model Group {
 
   users     User[]		@relation("user")
 	admins 		User[]		@relation("admin")
+
+	owner			User			@relation(fields: [ownerId], references: [id])
+	ownerId 	Int
+	
 	messages  Messages[]
 
 }
