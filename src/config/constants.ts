@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import { AuthRoute, RoomRoute, UsersRoute } from "../api/routes";
+import { AuthRoute, MessageRoute, RoomRoute, UsersRoute } from "../api/routes";
 import { DatabaseConfig } from "../types";
 
 dotenv.config();
@@ -17,7 +17,7 @@ export const db_config: DatabaseConfig = {
 
 export const __domain__ = process.env.DOMAIN || "http://127.0.0.1:8080";
 
-export const routes = [new UsersRoute(), new AuthRoute(), new RoomRoute()];
+export const routes = [new UsersRoute(), new AuthRoute(), new RoomRoute(), new MessageRoute()];
 
 export const PSW_HASH: number = +process.env.PASSWORD_HASH!;
 export const JWT_TOKEN = process.env.JWT_TOKEN!;
