@@ -5,13 +5,15 @@ import { authMiddleware } from "../middleware";
 class MessageRoute implements Route {
   public path = "/";
   public router = Router();
-  public roomController = new MessageController();
+  public messageController = new MessageController();
 
   constructor() {
     this.initializeRoutes();
   }
 
-  private initializeRoutes() {}
+  private initializeRoutes() {
+    this.router.post("/message", authMiddleware, this.messageController.createMessage);
+  }
 }
 
 export { MessageRoute };

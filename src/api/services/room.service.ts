@@ -75,7 +75,13 @@ class RoomService {
             owner: {
               select: this.basicUser
             },
-            messages: true
+            messages: {
+              include: {
+                sender: {
+                  select: this.basicUser
+                }
+              }
+            }
           }
         }
       }

@@ -3,7 +3,7 @@ import { UserDto } from "./user.dto";
 
 export class Message {
   id: Number;
-  name: String;
+  text: String;
   sender: UserDto;
   room: RoomDto;
 }
