@@ -1,7 +1,7 @@
 import { NextFunction, Response } from "express";
 import { UserRequest } from "../../types/auth";
 import { RoomService } from "../services";
-import { RoomDto, UserDto } from "../DTOs";
+import { RoomDto } from "../DTOs";
 
 class RoomController {
   public roomService = new RoomService();
