@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma } from "@prisma/client";
+import { HttpException } from "../../exceptions";
 import { RoomDto } from "../DTOs";
 
 class RoomService {
@@ -88,6 +89,54 @@ class RoomService {
     });
 
     return <RoomDto[]>data.group_user;
+  }
+
+  public async updateRoom(id: number, user: string, name: string, users: string[], admins: string[]): Promise<RoomDto> {
+    let room = await this.prisma.group.findUnique({
+      where: {
+        id: id
+      },
+      include: {
+        admins: true
+      }
+    });
+
+    let user_ids: any = [];
+    let admin_ids: any = [];
+    if (users) {
+      user_ids = users.map((user) => {
+        return { username: user };
+      });
+    }
+    if (admins) {
+      admin_ids = admins.map((admin) => {
+        return { username: admin };
+      });
+    }
+
+    await this.prisma.group.update({
+      where: {
+        id: id
+      },
+      data: {
+        users: { set: [] }
+      }
+    });
+
+    return this.prisma.group.update({
+      where: {
+        id: id
+      },
+      data: {
+        name: name,
+        users: {
+          connect: user_ids
+        },
+        admins: {
+          connect: admin_ids
+        }
+      }
+    });
   }
 }
 

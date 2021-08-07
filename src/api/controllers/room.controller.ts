@@ -1,7 +1,7 @@
 import { NextFunction, Response } from "express";
 import { UserRequest } from "../../types/auth";
 import { RoomService } from "../services";
-import { RoomDto } from "../DTOs";
+import { RoomDto, UserDto } from "../DTOs";
 
 class RoomController {
   public roomService = new RoomService();
@@ -29,6 +29,27 @@ class RoomController {
       const rooms: RoomDto[] = await this.roomService.getRooms(req.user!.username);
 
       res.status(201).json({ rooms: rooms, message: `Found rooms of ${req.user!.username} ` });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public updateRoom = async (req: UserRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const id: number = req.body["id"];
+      const name: string = req.body["name"];
+      const users: string[] = req.body["users"].map((user: any) => {
+        return user["username"];
+      });
+      const admins: string[] = req.body["admins"].map((user: any) => {
+        return user["username"];
+      });
+
+      const room: RoomDto = await this.roomService.updateRoom(id, req.user!.username, name, users, admins);
+
+      req.app.get("socketio").emit("room-change");
+
+      res.status(201).json();
     } catch (error) {
       next(error);
     }
