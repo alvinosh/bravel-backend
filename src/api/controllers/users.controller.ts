@@ -66,6 +66,20 @@ class UsersController {
       next(error);
     }
   };
+
+  public deleteRoom = async (req: UserRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const roomid = req.body["id"];
+
+      const user = await this.usersService.deleteRoom(req.user!.username, roomid);
+
+      req.app.get("socketio").emit("room-change");
+
+      res.status(201).json({ users: user, message: `User ${req.user!.username} left room` });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export { UsersController };

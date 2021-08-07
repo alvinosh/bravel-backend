@@ -78,6 +78,47 @@ class UsersService {
       }
     });
   }
+
+  public async deleteRoom(user: string, room_id: number): Promise<any> {
+    let group = await this.prisma.group.findUnique({
+      where: {
+        id: room_id
+      },
+      include: {
+        users: true,
+        admins: true,
+        owner: true
+      }
+    });
+
+    if (group.users.length <= 1) {
+      await this.prisma.group.delete({
+        where: {
+          id: room_id
+        }
+      });
+    } else if (group.owner.username === user) {
+      await this.prisma.group.delete({
+        where: {
+          id: room_id
+        }
+      });
+    } else {
+      await this.prisma.group.update({
+        where: {
+          id: room_id
+        },
+        data: {
+          users: {
+            disconnect: { username: user }
+          },
+          admins: {
+            disconnect: { username: user }
+          }
+        }
+      });
+    }
+  }
 }
 
 export { UsersService };
