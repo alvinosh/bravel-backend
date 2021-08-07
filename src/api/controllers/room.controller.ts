@@ -54,6 +54,17 @@ class RoomController {
       next(error);
     }
   };
+
+  public deleteRoom = async (req: UserRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const room: RoomDto = await this.roomService.deleteRoom(req.user!.username, parseInt(req.params.id));
+      req.app.get("socketio").emit("room-change");
+
+      res.status(201).json({ room: room, message: `Room Deleted` });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export { RoomController };

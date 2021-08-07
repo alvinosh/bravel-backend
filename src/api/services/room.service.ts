@@ -114,6 +114,16 @@ class RoomService {
       });
     }
 
+    if (
+      !room.admins
+        .map((user: any) => {
+          return user.username;
+        })
+        .includes(user)
+    ) {
+      throw new HttpException(401, "Unauthorized", ["User is not an admin"]);
+    }
+
     await this.prisma.group.update({
       where: {
         id: id
@@ -135,6 +145,33 @@ class RoomService {
         admins: {
           connect: admin_ids
         }
+      }
+    });
+  }
+
+  public async deleteRoom(user: string, roomid: number) {
+    let room = await this.prisma.group.findUnique({
+      where: {
+        id: roomid
+      },
+      include: {
+        admins: true
+      }
+    });
+
+    if (
+      !room.admins
+        .map((user: any) => {
+          return user.username;
+        })
+        .includes(user)
+    ) {
+      throw new HttpException(401, "Unauthorized", ["User is not an admin"]);
+    }
+
+    return this.prisma.group.delete({
+      where: {
+        id: roomid
       }
     });
   }
