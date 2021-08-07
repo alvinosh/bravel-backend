@@ -49,7 +49,7 @@ class RoomController {
 
       req.app.get("socketio").emit("room-change");
 
-      res.status(201).json();
+      res.status(201).json({ room: room, message: `Room Updated` });
     } catch (error) {
       next(error);
     }
