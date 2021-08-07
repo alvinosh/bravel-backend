@@ -1,5 +1,5 @@
-import { PrismaClient, Prisma } from "@prisma/client";
-import { UserDto } from "../DTOs";
+import { PrismaClient, Prisma, User } from "@prisma/client";
+import { LocationDto, UserDto } from "../DTOs";
 
 class UsersService {
   private prisma: any;
@@ -60,6 +60,22 @@ class UsersService {
         online: status
       },
       select: this.basicUser
+    });
+  }
+
+  public async updateLocation(user: UserDto, loc: LocationDto): Promise<UserDto> {
+    return this.prisma.user.update({
+      where: {
+        username: user.username
+      },
+      data: {
+        location: {
+          update: {
+            lat: loc.lat,
+            lon: loc.lon
+          }
+        }
+      }
     });
   }
 }

@@ -18,6 +18,8 @@ class UsersRoute implements Route {
 
     this.router.post("/user/online", authMiddleware, this.usersController.online);
     this.router.post("/user/offline", authMiddleware, this.usersController.offline);
+
+    this.router.put("/user/location", authMiddleware, this.usersController.updateLocation);
   }
 }
 
