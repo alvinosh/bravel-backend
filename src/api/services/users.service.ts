@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma, User } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { LocationDto, UserDto } from "../DTOs";
 
 class UsersService {
