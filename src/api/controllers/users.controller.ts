@@ -44,7 +44,7 @@ class UsersController {
 
       req.app.get("socketio").emit("user-change", user);
 
-      res.status(201).json({ users: user, message: "Online" });
+      res.status(201).json({ users: user, message: "Offline" });
     } catch (error) {
       next(error);
     }

@@ -4,35 +4,63 @@ import { LoginUserDto, SignupUserDto } from "../DTOs";
 import { AuthService, UsersService } from "../services";
 
 import * as jwt from "jsonwebtoken";
-import { JWT_TOKEN, TOKEN_EXPIRE } from "../../config";
+import { JWT_REFRESH_TOKEN, JWT_TOKEN, TOKEN_EXPIRE, TOKEN_REFRESH_EXPIRE } from "../../config";
 
 class AuthController {
-	public authService = new AuthService();
-	public usersService = new UsersService();
+  public authService = new AuthService();
+  public usersService = new UsersService();
 
-	public login = async (req: UserRequest, res: Response, next: NextFunction): Promise<void> => {
-		try {
-			const userData: LoginUserDto = req.body;
-			const user = await this.authService.login(userData);
-			const userToken = jwt.sign(user, JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
+  generateTokens(data: any) {
+    let accesToken = jwt.sign(data, JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
+    let refreshToken = jwt.sign(data, JWT_REFRESH_TOKEN, { expiresIn: TOKEN_REFRESH_EXPIRE });
 
-			res.status(201).json({ token: userToken, message: "login" });
-		} catch (error) {
-			next(error);
-		}
-	};
+    return { accesToken, refreshToken };
+  }
 
-	public signup = async (req: UserRequest, res: Response, next: NextFunction): Promise<void> => {
-		try {
-			const userData: SignupUserDto = req.body;
-			const user = await this.authService.signup(userData);
-			const userToken = jwt.sign(user, JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
+  async verifyRefresh(email: string, token: string) {
+    try {
+      const decoded = (await jwt.verify(token, "refreshSecret")) as any;
+      return decoded.email === email;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
 
-			res.status(201).json({ token: userToken, message: "signup" });
-		} catch (error) {
-			next(error);
-		}
-	};
+  public login = async (req: UserRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userData: LoginUserDto = req.body;
+      const user = await this.authService.login(userData);
+      const { accesToken, refreshToken } = this.generateTokens(user);
+
+      res.status(201).json({ accesToken: accesToken, refreshToken: refreshToken, message: "login" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public signup = async (req: UserRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userData: SignupUserDto = req.body;
+      const user = await this.authService.signup(userData);
+      const { accesToken, refreshToken } = this.generateTokens(user);
+
+      res.status(201).json({ accesToken: accesToken, refreshToken: refreshToken, message: "signup" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public refreshtoken = async (req: UserRequest, res: Response, _next: NextFunction): Promise<void> => {
+    const { refreshToken, ...user } = req.body;
+    const isValid = this.verifyRefresh(user, refreshToken);
+    if (!isValid) {
+      res.status(401).json({ success: false, error: "Invalid token,try login again" });
+    } else {
+      let accessToken = jwt.sign(user, JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
+      res.status(200).json({ success: true, accessToken });
+    }
+  };
 }
 
 export { AuthController };

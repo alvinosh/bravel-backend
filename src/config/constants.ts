@@ -20,6 +20,9 @@ export const __domain__ = process.env.DOMAIN || "http://127.0.0.1:8080";
 export const routes = [new UsersRoute(), new AuthRoute(), new RoomRoute(), new MessageRoute()];
 
 export const PSW_HASH: number = +process.env.PASSWORD_HASH!;
-export const JWT_TOKEN = process.env.JWT_TOKEN!;
 
-export const TOKEN_EXPIRE = "7d";
+export const JWT_TOKEN = process.env.JWT_TOKEN!;
+export const JWT_REFRESH_TOKEN = process.env.JWT_REFRESH_TOKEN!;
+
+export const TOKEN_EXPIRE = "5m";
+export const TOKEN_REFRESH_EXPIRE = "60d";
