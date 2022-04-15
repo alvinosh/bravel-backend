@@ -24,5 +24,5 @@ export const PSW_HASH: number = +process.env.PASSWORD_HASH!;
 export const JWT_TOKEN = process.env.JWT_TOKEN!;
 export const JWT_REFRESH_TOKEN = process.env.JWT_REFRESH_TOKEN!;
 
-export const TOKEN_EXPIRE = "5m";
+export const TOKEN_EXPIRE = "10s";
 export const TOKEN_REFRESH_EXPIRE = "60d";

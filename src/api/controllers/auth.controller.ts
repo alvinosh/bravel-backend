@@ -11,10 +11,10 @@ class AuthController {
   public usersService = new UsersService();
 
   generateTokens(data: any) {
-    let accesToken = jwt.sign(data, JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
+    let accessToken = jwt.sign(data, JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
     let refreshToken = jwt.sign(data, JWT_REFRESH_TOKEN, { expiresIn: TOKEN_REFRESH_EXPIRE });
 
-    return { accesToken, refreshToken };
+    return { accessToken, refreshToken };
   }
 
   async verifyRefresh(email: string, token: string) {
@@ -31,9 +31,9 @@ class AuthController {
     try {
       const userData: LoginUserDto = req.body;
       const user = await this.authService.login(userData);
-      const { accesToken, refreshToken } = this.generateTokens(user);
+      const { accessToken, refreshToken } = this.generateTokens(user);
 
-      res.status(201).json({ accesToken: accesToken, refreshToken: refreshToken, message: "login" });
+      res.status(201).json({ accessToken: accessToken, refreshToken: refreshToken, message: "login" });
     } catch (error) {
       next(error);
     }
@@ -43,9 +43,9 @@ class AuthController {
     try {
       const userData: SignupUserDto = req.body;
       const user = await this.authService.signup(userData);
-      const { accesToken, refreshToken } = this.generateTokens(user);
+      const { accessToken, refreshToken } = this.generateTokens(user);
 
-      res.status(201).json({ accesToken: accesToken, refreshToken: refreshToken, message: "signup" });
+      res.status(201).json({ accessToken: accessToken, refreshToken: refreshToken, message: "signup" });
     } catch (error) {
       next(error);
     }
