@@ -29,7 +29,7 @@ class UsersController {
 
   public online = async (req: UserRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const user: UserDto = await this.usersService.setStatus(req.user!, true);
+      const user: UserDto = await this.usersService.setStatus(req.user!.username, true);
       req.app.get("socketio").emit("user-change", user);
 
       res.status(201).json({ users: user, message: "Online" });
@@ -40,7 +40,7 @@ class UsersController {
 
   public offline = async (req: UserRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const user: UserDto = await this.usersService.setStatus(req.user!, false);
+      const user: UserDto = await this.usersService.setStatus(req.user!.username, false);
 
       req.app.get("socketio").emit("user-change", user);
 

@@ -12,7 +12,8 @@ import { __domain__, __port__, __prod__ } from "../config";
 import { errorMiddleware } from "../api/middleware";
 import { Route } from "../types";
 import { routes } from "../config";
-import { reqWithToken } from "../utils";
+import { UserDto } from "../api/DTOs";
+import { UsersService } from "../api/services";
 
 class Server {
   private app: express.Application;
@@ -54,23 +55,17 @@ class Server {
     this.app.set("socketio", this.io);
 
     this.io.on("connection", (socket) => {
-      socket.on("join", (token) => {
-        this.users[socket.id] = token;
-        reqWithToken(`${__domain__}/user/online`, token);
+      socket.on("join", (username) => {
+        this.users[socket.id] = username;
       });
 
-      socket.on("logout", (token) => {
+      socket.on("disconnect", async () => {
+        let username = this.users[socket.id];
         delete this.users[socket.id];
-        if (!Object.keys(this.users).find((key) => this.users[key] === token)) {
-          reqWithToken(`${__domain__}/user/offline`, token);
-        }
-      });
-
-      socket.on("disconnect", () => {
-        let token = this.users[socket.id];
-        delete this.users[socket.id];
-        if (!Object.keys(this.users).find((key) => this.users[key] === token)) {
-          reqWithToken(`${__domain__}/user/offline`, token);
+        if (!Object.keys(this.users).find((key) => this.users[key] === username)) {
+          let usersService = new UsersService();
+          const user: UserDto = await usersService.setStatus(username, false);
+          socket.emit("user-change", user);
         }
       });
     });

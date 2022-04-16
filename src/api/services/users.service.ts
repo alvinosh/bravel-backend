@@ -51,10 +51,10 @@ class UsersService {
     });
   }
 
-  public async setStatus(user: UserDto, status: boolean): Promise<UserDto> {
+  public async setStatus(username: string, status: boolean): Promise<UserDto> {
     return this.prisma.user.update({
       where: {
-        username: user.username
+        username: username
       },
       data: {
         online: status
