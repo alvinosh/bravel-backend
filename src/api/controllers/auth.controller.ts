@@ -1,10 +1,11 @@
 import { NextFunction, Response } from "express";
 import { UserRequest } from "src/types/auth";
-import { LoginUserDto, SignupUserDto } from "../DTOs";
+import { LoginUserDto, SignupUserDto, UserDto } from "../DTOs";
 import { AuthService, UsersService } from "../services";
 
 import * as jwt from "jsonwebtoken";
 import { JWT_REFRESH_TOKEN, JWT_TOKEN, TOKEN_EXPIRE, TOKEN_REFRESH_EXPIRE } from "../../config";
+import { Logger } from "../../lib";
 
 class AuthController {
   public authService = new AuthService();
@@ -19,7 +20,7 @@ class AuthController {
 
   async verifyRefresh(email: string, token: string) {
     try {
-      const decoded = (await jwt.verify(token, "refreshSecret")) as any;
+      const decoded = (await jwt.verify(token, JWT_REFRESH_TOKEN)) as any;
       return decoded.email === email;
     } catch (error) {
       console.error(error);
@@ -52,12 +53,23 @@ class AuthController {
   };
 
   public refreshtoken = async (req: UserRequest, res: Response, _next: NextFunction): Promise<void> => {
-    const { refreshToken, ...user } = req.body;
-    const isValid = this.verifyRefresh(user, refreshToken);
+    const { refreshToken } = req.body;
+
+    const user_tok = (await jwt.verify(refreshToken, JWT_REFRESH_TOKEN)) as UserDto;
+    const isValid = this.verifyRefresh(user_tok.email, refreshToken);
+
+    const user = await this.usersService.getUser(user_tok.username);
+
     if (!isValid) {
       res.status(401).json({ success: false, error: "Invalid token,try login again" });
     } else {
-      let accessToken = jwt.sign(user, JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
+      let accessToken;
+      try {
+        accessToken = jwt.sign(user, JWT_TOKEN, { expiresIn: TOKEN_EXPIRE });
+      } catch (error) {
+        Logger.error(error);
+      }
+
       res.status(200).json({ success: true, accessToken });
     }
   };

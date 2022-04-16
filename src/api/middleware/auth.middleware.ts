@@ -6,25 +6,28 @@ import jwt from "jsonwebtoken";
 import { JWT_TOKEN } from "../../config";
 import { HttpException } from "../../exceptions";
 import { UserDto } from "../DTOs";
+import { Logger } from "../../lib";
 
 const authMiddleware = async (req: UserRequest, _res: Response, next: NextFunction) => {
-	try {
-		const Authorization = req.header("Authorization");
+  try {
+    const Authorization = req.header("Authorization");
 
-		if (Authorization) {
-			const AuthKey = Authorization.split("Bearer ")[1];
+    if (Authorization) {
+      const AuthKey = Authorization.split("Bearer ")[1];
 
-			const verificationResponse = (await jwt.verify(AuthKey, JWT_TOKEN)) as UserDto;
+      const verificationResponse = (await jwt.verify(AuthKey, JWT_TOKEN)) as UserDto;
 
-			req.user = verificationResponse;
+      req.user = verificationResponse;
 
-			next();
-		} else {
-			next(new HttpException(404, "Authentication token missing"));
-		}
-	} catch (error) {
-		next(new HttpException(401, "Wrong authentication token"));
-	}
+      next();
+    } else {
+      next(new HttpException(404, "Authentication token missing"));
+    }
+  } catch (error) {
+    Logger.error(error);
+
+    next(new HttpException(401, "Wrong authentication token"));
+  }
 };
 
 export { authMiddleware };
